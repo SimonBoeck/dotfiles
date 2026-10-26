@@ -74,6 +74,67 @@ mas "Keynote", id: 361285480
 mas "Numbers", id: 361304891
 mas "Pages",   id: 361309726
 
+# --- from mathiasbynens' brew.sh (ported) ---------------------------------
+# GNU tools & shell — some .aliases/.functions assume these
+brew "coreutils"
+brew "moreutils"
+brew "findutils"
+brew "gnu-sed"
+brew "bash"
+brew "bash-completion@2"
+
+# newer versions of macOS-bundled tools
+brew "vim"
+brew "grep"
+brew "openssh"
+brew "screen"
+brew "php"
+brew "gmp"
+
+# other useful binaries
+brew "ack"
+brew "git-lfs"
+brew "gs"
+brew "lua"
+brew "lynx"
+brew "p7zip"
+brew "pigz"
+brew "pv"
+brew "rename"
+brew "rlwrap"
+brew "tree"
+brew "vbindiff"
+brew "zopfli"
+
+# font tools
+brew "woff2"
+
+# security / CTF tools (see https://github.com/ctfs/write-ups)
+brew "aircrack-ng"
+brew "bfg"
+brew "binutils"
+brew "binwalk"
+brew "cifer"
+brew "dex2jar"
+brew "dns2tcp"
+brew "fcrackzip"
+brew "foremost"
+brew "hydra"
+brew "john"
+brew "knock"
+brew "netpbm"
+brew "nmap"
+brew "pngcheck"
+brew "socat"
+brew "sqlmap"
+brew "tcpflow"
+brew "tcpreplay"
+brew "ucspi-tcp"
+brew "xpdf"
+brew "xz"
+# removed from Homebrew, no longer installable: hashpump, tcptrace,
+# sfnt2woff, sfnt2woff-zopfli (the bramstein/webfonttools tap is gone)
+
 # --- not available via Homebrew/App Store — install by hand --------------
 # Metashape   — commercial license, agisoft.com
 # loch        — no known cask; get it from wherever you originally got it
