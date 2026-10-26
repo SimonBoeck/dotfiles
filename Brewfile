@@ -3,7 +3,7 @@
 # Check what's missing without installing anything:
 #   brew bundle check --file=Brewfile --verbose
 
-# --- dev tools & CLI (sboeck) ------------------------------------------
+# --- dev tools & CLI -----------------------------------------------------
 brew "git"
 brew "gh"
 brew "mas"
@@ -26,7 +26,7 @@ brew "corepack"
 brew "therion"
 brew "therion-studio"
 
-# --- personal apps (sboeck) ---------------------------------------------
+# --- personal apps ---------------------------------------------------
 cask "affinity"
 cask "anaconda"
 cask "artcraft-launcher"
@@ -45,7 +45,7 @@ cask "pycharm"
 cask "webstorm"
 cask "writerside"
 
-# --- sboeck_innoviq apps -------------------------------------------------
+# --- work apps -------------------------------------------------------
 cask "bruno"
 cask "camo-studio"
 cask "multitouch"
@@ -68,7 +68,7 @@ cask "onedrive"
 cask "windows-app"
 
 # --- Mac App Store apps (Apple's own, MAS-exclusive) ----------------------
-# needs: already signed in to the App Store app with sboeck's Apple ID
+# needs: already signed in to the App Store app with your Apple ID
 mas "iMovie",  id: 408981434
 mas "Keynote", id: 361285480
 mas "Numbers", id: 361304891
