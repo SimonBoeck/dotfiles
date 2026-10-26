@@ -75,13 +75,13 @@ When setting up a new Mac, you may want to set some sensible macOS defaults:
 
 ### Install Homebrew formulae
 
-When setting up a new Mac, you may want to install some common [Homebrew](https://brew.sh/) formulae (after installing Homebrew, of course):
+Formulae, casks and Mac App Store apps are declared in `Brewfile` and installed via [Homebrew Bundle](https://github.com/Homebrew/homebrew-bundle):
 
 ```bash
-./brew.sh
+brew bundle install --file=Brewfile
 ```
 
-Some of the functionality of these dotfiles depends on formulae installed by `brew.sh`. If you don’t plan to run `brew.sh`, you should look carefully through the script and manually install any particularly important ones. A good example is Bash/Git completion: the dotfiles use a special version from Homebrew.
+`./bootstrap.sh` runs this automatically. Some of the functionality of the original dotfiles this repo was forked from (`.functions`, `.aliases`, `.bash_profile`) assumed GNU tools and Bash/Git completion from Homebrew's old `brew.sh` script, which this fork removed — add `coreutils`, `gnu-sed`, `findutils`, `bash-completion2` etc. to `Brewfile` yourself if you rely on that.
 
 ## Feedback
 
