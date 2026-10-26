@@ -42,6 +42,7 @@ cask "shearwater-cloud"
 cask "vlc"
 cask "balenaetcher"
 cask "pycharm"
+cask "visual-studio-code"
 cask "webstorm"
 cask "writerside"
 
