@@ -20,14 +20,6 @@ brew "ffmpeg"
 brew "tesseract"
 brew "sqlite"
 brew "yarn"
-brew "corepack"
-
-# no prebuilt bottle — compiles from source on install, can take a while
-# GUI (xtherion) is bundled in this formula, no separate package for it
-tap "therion/homebrew-therion"
-cask "xquartz"   # X11 server required by xtherion
-cask "basictex"  # TeX/pdfTeX used by therion for map output
-brew "therion"
 
 # --- personal apps ---------------------------------------------------
 cask "affinity"
