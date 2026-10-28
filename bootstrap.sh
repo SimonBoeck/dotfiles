@@ -66,7 +66,11 @@ if [ "$DRY_RUN" -eq 1 ]; then
   fi
 else
   brew update
-  if ! brew bundle install --file="$BREWFILE"; then
+  # --no-upgrade: several casks here (teams, parsec, insta360-studio, ...)
+  # self-update and end up owned by root, which breaks brew's upgrade step
+  # with "Operation not permitted". Only install what's missing; run
+  # `brew upgrade <formula>` by hand for anything you actually want bumped.
+  if ! brew bundle install --file="$BREWFILE" --no-upgrade; then
     warn "brew bundle reported failures — see output above"
     FAILED+=("brew-bundle")
   fi

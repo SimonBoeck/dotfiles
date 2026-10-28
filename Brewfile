@@ -26,7 +26,7 @@ cask "affinity"
 cask "anaconda"
 cask "artcraft-launcher"
 cask "blender"
-cask "claude"
+# claude — self-updating app, not brew-managed (see bootstrap.sh's --no-upgrade)
 cask "discord"
 cask "gimp"
 cask "jetbrains-toolbox"
