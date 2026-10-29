@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 #
 # Fully sets up this machine in one pass — macOS, Debian, and Ubuntu:
-#   1. Installs Homebrew if needed, then everything listed in ./Brewfile
+#   1. Generates the en_US.UTF-8 locale on Linux, so SSH logins from macOS
+#      (which forwards $LANG/$LC_*) don't hit setlocale warnings
+#   2. Installs Homebrew if needed, then everything listed in ./Brewfile
 #      (cask/mas entries and anything marked `if OS.mac?` are skipped on
 #      Linux automatically)
-#   2. Symlinks these dotfiles into $HOME (the original dotfiles flow)
-#   3. Sets the default login shell to Homebrew's bash
-#   4. Clones every GitHub repo under SimonBoeck into ~/Documents/Workspace
+#   3. Symlinks these dotfiles into $HOME (the original dotfiles flow)
+#   4. Sets the default login shell to Homebrew's bash
+#   5. Clones every GitHub repo under SimonBoeck into ~/Documents/Workspace
 #
 # Usage:
 #   ./bootstrap.sh                 # prompts before overwriting $HOME files
@@ -52,7 +54,32 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 1. Homebrew + everything in ./Brewfile
+# 1. Locale (Linux only)
+#    macOS always ships en_US.UTF-8; a minimal Debian/Ubuntu install often
+#    only has C/POSIX. ssh's client forwards $LANG/$LC_* by default, so
+#    logging in from a Mac pushes "en_US.UTF-8" at this box whether or not
+#    it's actually generated here, which makes every command print
+#    "setlocale: ... cannot change locale" until it is. Runs regardless of
+#    whether Homebrew/Brewfile below is already done.
+# ---------------------------------------------------------------------------
+if [ "$IS_LINUX" -eq 1 ] && command -v apt-get >/dev/null 2>&1; then
+  if locale -a 2>/dev/null | grep -qiE '^en_US\.utf-?8$'; then
+    ok "en_US.UTF-8 locale already generated"
+  elif [ "$DRY_RUN" -eq 1 ]; then
+    log "[dry run] would generate the en_US.UTF-8 locale"
+  else
+    log "Generating en_US.UTF-8 locale"
+    if sudo apt-get update && sudo apt-get install -y locales && sudo locale-gen en_US.UTF-8 && sudo update-locale LANG=en_US.UTF-8; then
+      ok "en_US.UTF-8 locale generated"
+    else
+      warn "couldn't generate en_US.UTF-8 locale"
+      FAILED+=("locale-gen")
+    fi
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# 2. Homebrew + everything in ./Brewfile
 #    Runs before the dotfiles are copied over, so that by the time
 #    .bash_profile gets sourced below, the tools/paths it expects
 #    (coreutils, bash-completion@2, brew itself, ...) already exist.
@@ -113,7 +140,7 @@ if [ "$IS_MACOS" -eq 1 ]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 2. Copy dotfiles into $HOME
+# 3. Copy dotfiles into $HOME
 # ---------------------------------------------------------------------------
 RSYNC_EXCLUDES=(
   --exclude ".git/"
@@ -146,7 +173,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 3. Default login shell -> Homebrew's bash
+# 4. Default login shell -> Homebrew's bash
 #    macOS's bundled /bin/bash is the ancient 3.2 (GPLv2 cutoff); these
 #    dotfiles (.bash_profile, bash-completion@2, etc.) expect a modern bash.
 # ---------------------------------------------------------------------------
@@ -175,7 +202,7 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# 4. GitHub projects (SimonBoeck) -> ~/Documents/Workspace
+# 5. GitHub projects (SimonBoeck) -> ~/Documents/Workspace
 #    Uses gh (installed via the Brewfile above). 'gh auth login' opens the
 #    interactive sign-in if needed. Without it, cloning is skipped entirely —
 #    private repos matter, so there's no silent public-only fallback.
