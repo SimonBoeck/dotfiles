@@ -1,12 +1,17 @@
-# Declarative package list for this Mac. Install everything with:
+# Declarative package list, shared across macOS, Debian and Ubuntu. Install
+# everything with:
 #   brew bundle install --file=Brewfile
 # Check what's missing without installing anything:
 #   brew bundle check --file=Brewfile --verbose
+#
+# `cask` and `mas` entries only apply on macOS — Homebrew Bundle skips them
+# automatically on Linux, no guard needed. Formulas that only work on macOS
+# (like `mas` the CLI itself) are marked `if OS.mac?` below.
 
 # --- dev tools & CLI -----------------------------------------------------
 brew "git"
 brew "gh"
-brew "mas"
+brew "mas" if OS.mac? # Mac App Store CLI — macOS only
 brew "node"
 brew "python@3.13"
 brew "python@3.14"

@@ -6,25 +6,29 @@
 
 **Warning:** If you want to give these dotfiles a try, you should first fork this repository, review the code, and remove things you don’t want or need. Don’t blindly use my settings unless you know what that entails. Use at your own risk!
 
+**Supported platforms:** macOS, Debian, and Ubuntu. `bootstrap.sh` detects the OS and skips anything that doesn't apply — Homebrew casks, Mac App Store apps, and `./.macos` are macOS-only; on Debian/Ubuntu it installs Homebrew's Linux build prerequisites via `apt` first.
+
 ### Using Git and the bootstrap script
 
 You can clone the repository wherever you want. (I like to keep it in `~/Projects/dotfiles`, with `~/dotfiles` as a symlink.) The bootstrapper script will pull in the latest version and copy the files to your home folder.
 
 ```bash
-git clone https://github.com/mathiasbynens/dotfiles.git && cd dotfiles && source bootstrap.sh
+git clone https://github.com/mathiasbynens/dotfiles.git && cd dotfiles && ./bootstrap.sh
 ```
 
 To update, `cd` into your local `dotfiles` repository and then:
 
 ```bash
-source bootstrap.sh
+./bootstrap.sh
 ```
 
 Alternatively, to update while avoiding the confirmation prompt:
 
 ```bash
-set -- -f; source bootstrap.sh
+./bootstrap.sh --force
 ```
+
+Run it with `bash bootstrap.sh` (or `./bootstrap.sh`, which does the same thing via its shebang) rather than `source bootstrap.sh` — it's a bash script, and sourcing it from a non-bash login shell (zsh is the macOS default) runs it in the wrong interpreter.
 
 ### Git-free install
 
@@ -75,13 +79,13 @@ When setting up a new Mac, you may want to set some sensible macOS defaults:
 
 ### Install Homebrew formulae
 
-Formulae, casks and Mac App Store apps are declared in `Brewfile` and installed via [Homebrew Bundle](https://github.com/Homebrew/homebrew-bundle):
+Formulae, casks and Mac App Store apps are declared in `Brewfile` and installed via [Homebrew Bundle](https://github.com/Homebrew/homebrew-bundle), which also [works on Debian/Ubuntu](https://docs.brew.sh/Homebrew-on-Linux):
 
 ```bash
 brew bundle install --file=Brewfile
 ```
 
-`./bootstrap.sh` runs this automatically. Some of the functionality of the original dotfiles this repo was forked from (`.functions`, `.aliases`, `.bash_profile`) assumed GNU tools and Bash/Git completion from Homebrew's old `brew.sh` script, which this fork removed — add `coreutils`, `gnu-sed`, `findutils`, `bash-completion2` etc. to `Brewfile` yourself if you rely on that.
+`./bootstrap.sh` runs this automatically (installing Homebrew itself first if needed, via `apt` prerequisites on Debian/Ubuntu). `cask` and Mac App Store (`mas`) entries are skipped automatically on Linux; formulas that are macOS-only themselves (like the `mas` CLI) are marked `if OS.mac?` in the Brewfile. Some of the functionality of the original dotfiles this repo was forked from (`.functions`, `.aliases`, `.bash_profile`) assumed GNU tools and Bash/Git completion from Homebrew's old `brew.sh` script, which this fork removed — add `coreutils`, `gnu-sed`, `findutils`, `bash-completion2` etc. to `Brewfile` yourself if you rely on that.
 
 ## Feedback
 

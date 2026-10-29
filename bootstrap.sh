@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# Fully sets up this Mac in one pass:
+# Fully sets up this machine in one pass — macOS, Debian, and Ubuntu:
 #   1. Installs Homebrew if needed, then everything listed in ./Brewfile
+#      (cask/mas entries and anything marked `if OS.mac?` are skipped on
+#      Linux automatically)
 #   2. Symlinks these dotfiles into $HOME (the original dotfiles flow)
 #   3. Sets the default login shell to Homebrew's bash
 #   4. Clones every GitHub repo under SimonBoeck into ~/Documents/Workspace
@@ -18,6 +20,12 @@ DOTFILES_DIR="$(pwd)"
 BREWFILE="$DOTFILES_DIR/Brewfile"
 GITHUB_USER="SimonBoeck"
 WORKSPACE_DIR="$HOME/Documents/Workspace"
+
+case "$(uname -s)" in
+  Darwin) IS_MACOS=1; IS_LINUX=0 ;;
+  Linux)  IS_MACOS=0; IS_LINUX=1 ;;
+  *)      IS_MACOS=0; IS_LINUX=0 ;;
+esac
 
 DRY_RUN=0
 FORCE=0
@@ -37,7 +45,11 @@ would_clone(){ printf '\033[1;33m  →\033[0m would clone %s\n' "$1"; }
 
 [ "$DRY_RUN" -eq 1 ] && log "DRY RUN — nothing will be written, installed, or cloned"
 
-git pull origin main
+if command -v git >/dev/null 2>&1; then
+  git pull origin main
+else
+  warn "git not available yet — skipping self-update (it's installed below)"
+fi
 
 # ---------------------------------------------------------------------------
 # 1. Homebrew + everything in ./Brewfile
@@ -48,10 +60,25 @@ git pull origin main
 if ! command -v brew >/dev/null 2>&1; then
   if [ "$DRY_RUN" -eq 1 ]; then
     log "[dry run] would install Homebrew (not found on this machine)"
+    if [ "$IS_LINUX" -eq 1 ] && command -v apt-get >/dev/null 2>&1; then
+      echo "  (would apt-get install build-essential procps curl file git — Homebrew's Linux prerequisites)"
+    fi
   else
+    if [ "$IS_LINUX" -eq 1 ] && command -v apt-get >/dev/null 2>&1; then
+      log "Installing Homebrew's Linux prerequisites via apt"
+      sudo apt-get update && sudo apt-get install -y build-essential procps curl file git
+    fi
+
     log "Installing Homebrew (official installer from brew.sh)"
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-    eval "$(/opt/homebrew/bin/brew shellenv)"
+
+    # Prefix differs by platform/arch: Apple Silicon, Intel Mac, Linuxbrew.
+    for brew_bin in /opt/homebrew/bin/brew /usr/local/bin/brew /home/linuxbrew/.linuxbrew/bin/brew; do
+      if [ -x "$brew_bin" ]; then
+        eval "$("$brew_bin" shellenv)"
+        break
+      fi
+    done
   fi
 else
   log "Homebrew already installed"
@@ -76,12 +103,14 @@ else
   fi
 fi
 
-echo
-echo "Not available via Homebrew/App Store — install by hand:"
-echo "  - Metashape — commercial license, download from agisoft.com"
-echo "  - loch — no known Homebrew cask; install from wherever you originally got it"
-echo "  - DecoPlanner — no known Homebrew cask; install from the vendor's site"
-echo "  - Python 3.14 standalone installer — only if some app specifically wants the official python.org Framework build; get it from python.org/downloads if so"
+if [ "$IS_MACOS" -eq 1 ]; then
+  echo
+  echo "Not available via Homebrew/App Store — install by hand:"
+  echo "  - Metashape — commercial license, download from agisoft.com"
+  echo "  - loch — no known Homebrew cask; install from wherever you originally got it"
+  echo "  - DecoPlanner — no known Homebrew cask; install from the vendor's site"
+  echo "  - Python 3.14 standalone installer — only if some app specifically wants the official python.org Framework build; get it from python.org/downloads if so"
+fi
 
 # ---------------------------------------------------------------------------
 # 2. Copy dotfiles into $HOME
