@@ -19,23 +19,6 @@ export HISTFILESIZE="${HISTSIZE}";
 # Omit duplicates and commands that begin with a space from history.
 export HISTCONTROL='ignoreboth';
 
-# Prefer US English and use UTF-8, but only a locale that's actually
-# generated — a minimal Debian install has no locales beyond C/POSIX by
-# default (`sudo apt-get install locales && sudo locale-gen en_US.UTF-8`
-# to add it), and forcing an unavailable locale just prints setlocale
-# warnings on every command. Fall back to the UTF-8 C locale (present
-# everywhere, including over an SSH session that forwarded a LANG/LC_*
-# the remote side doesn't have) rather than leaving whatever broke.
-_available_locales="$(locale -a 2>/dev/null)";
-if echo "${_available_locales}" | grep -qiE '^en_US\.(utf-?8)$'; then
-	export LANG='en_US.UTF-8';
-	export LC_ALL='en_US.UTF-8';
-elif echo "${_available_locales}" | grep -qiE '^C\.utf-?8$'; then
-	export LANG="$(echo "${_available_locales}" | grep -iE '^C\.utf-?8$' | head -n1)";
-	export LC_ALL="${LANG}";
-fi;
-unset _available_locales;
-
 # Highlight section titles in manual pages.
 export LESS_TERMCAP_md="${yellow}";
 
